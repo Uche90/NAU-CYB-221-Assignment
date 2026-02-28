@@ -1,3 +1,12 @@
+'''
+Name: Obi Promise Uche
+Registration Number: 2024924028
+Course Code: NAU-CYB 221
+Level: 200l
+Department: Cyber Security
+Faculty: Physical Science
+'''
+
 # NAU-CYB 221 – Local Port Discovery Tool (Defensive, Local Machine Only)
 import psutil
 import socket
