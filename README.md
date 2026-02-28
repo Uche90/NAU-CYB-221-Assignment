@@ -1,9 +1,15 @@
 Name: Obi Promise Uche
+
 Registration Number: 2024924028
+
 Course Code: NAU-CYB 221
+
 Level: 200l
+
 Department: Cyber Security
+
 Faculty: Physical Science
+
 
 Local Listening Ports Enumerator (Defensive – Local Machine Only)
 
