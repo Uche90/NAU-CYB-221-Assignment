@@ -1,0 +1,27 @@
+Local Port Discovery and Service Identification Report
+NAU-CYB 221 – Cybersecurity Technology
+
+Ports detected and their purpose:
+Running the tool with sudo on ChromeOS Crostini revealed exactly two ports:
+- TCP 3217 bound to 127.0.0.1 by process "code" (Visual Studio Code / Code-OSS)
+Purpose: Local development servers, extension APIs, live previews, debugging endpoints. Bound to loopback to keep it internal.
+- UDP 68 bound to 0.0.0.0 by process "dhclient"
+Purpose: DHCP client port. Required to receive broadcast IP configuration replies from servers (RFC 2131). Binding to localhost would break network connectivity in the container.
+
+Exposed vs local-only classification:
+- TCP 3217 → Local-only (127.0.0.1) → No external access possible. Risk negligible.
+- UDP 68 → Exposed (0.0.0.0) → Required by DHCP protocol. Practical risk low in trusted networks; theoretical rogue DHCP server or starvation attacks possible on hostile LANs, but mitigated by ChromeOS sandboxing and container boundaries.
+      No high-interest ports (21/FTP, 22/SSH, 80/HTTP, 445/SMB, 3389/RDP, etc.) were open. The attack surface is already extremely small — typical for a developer-focused container with no unnecessary services.
+
+Why ports matter in this context:
+      Open ports are reconnaissance targets. Attackers use them to fingerprint services, match versions to CVEs, and attempt exploitation. Every unnecessary listening port expands the attack surface. Here, both ports are justified: one for development convenience, one for basic networking. The absence of everything else shows effective default hardening in Crostini.
+
+Security controls to reduce risk:
+- Remove UDP 68 exposure: Configure static IP in Crostini (e.g. nmcli con mod "Linux" ipv4.method manual ipv4.addresses 192.168.1.100/24; nmcli con up "Linux") — eliminates dhclient.
+- Minimize TCP 3217: Disable VS Code Live Server / debug extensions when not needed, or close VS Code.
+- Prevent accidental forwarding: ChromeOS Settings → Linux → Port Forwarding → delete any unnecessary rules.
+- Network protection: Use ChromeOS VPN on public/untrusted WiFi to encrypt DHCP traffic and reduce spoofing risk.
+- Monitoring: Rerun this tool or ss -ltnup periodically to detect unexpected changes.
+
+Conclusion:
+      This exercise confirms that visibility is the starting point of defense. My system has only two explainable ports — one safe by design, one protocol-mandated with low real-world risk. Crostini’s minimalism demonstrates how modern OS/container design can enforce least functionality from the start. Reducing even these two ports further is possible and would shrink the surface closer to zero.
